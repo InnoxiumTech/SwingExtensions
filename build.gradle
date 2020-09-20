@@ -1,0 +1,86 @@
+plugins {
+
+    id 'java'
+    id "com.jfrog.bintray" version '1.8.5'
+}
+
+def props = new Properties()
+File bintrayProps = new File("bintray.properties")
+if(bintrayProps.exists()) {
+
+    file("bintray.properties").withInputStream { props.load(it) }
+}
+
+apply plugin: "maven"
+apply plugin: "maven-publish"
+
+group 'uk.co.innoxium.swing'
+version '1.0'
+
+repositories {
+
+    mavenCentral()
+}
+
+dependencies {
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+tasks.withType(Javadoc) {
+
+    failOnError false
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+    options.addStringOption('charSet', 'UTF-8')
+}
+
+jar.finalizedBy javadocJar
+jar.finalizedBy sourcesJar
+
+publishing {
+
+    publications {
+
+        SwingPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId 'uk.co.innoxium.swing'
+            artifactId 'swingext'
+            version '0.1'
+        }
+    }
+}
+
+bintray {
+
+//    dryRun = true
+    user = props.get("username")
+    key = props.get("apiKey")
+    publications = ['SwingPublication']
+    pkg {
+
+        repo = 'SwingExtensions'
+        name = 'swingextensions'
+        userOrg = 'innoxium'
+        vcsUrl = 'https://github.com/InnoxiumTech/SwingExtensions.git'
+        licenses = ['MIT']
+        version {
+
+            name = '0.1'
+            desc = 'This release marks a huge step forward in terms of UX and presentation.'
+            released = new Date()
+        }
+    }
+}
