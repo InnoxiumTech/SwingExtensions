@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -50,7 +51,12 @@ public class JHyperlink extends JLabel {
 
                 isClicked = true;
                 setForeground(clickedColour);
-                DesktopUtil.openURL(JHyperlink.this.protocol, JHyperlink.this.url);
+                try {
+
+                    DesktopUtil.openURL(JHyperlink.this.protocol + JHyperlink.this.url);
+                } catch (MalformedURLException | URISyntaxException malformedURLException) {
+                    malformedURLException.printStackTrace();
+                }
 //                    Desktop.getDesktop().browse(new URI(String.format("%s%s", JHyperlink.this.protocol, JHyperlink.this.url)));
             }
 

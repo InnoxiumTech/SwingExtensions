@@ -2,15 +2,26 @@ package uk.co.innoxium.swing.util;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 public class DesktopUtil {
 
     // We must use toLowerCase to accurately check the string later on
     private static final String OS = System.getProperty("os.name").toLowerCase();
 
-    public static void openURL(String domain) {
+    public static void openURL(URL url) throws URISyntaxException {
 
-        openURL("https://", domain);
+        openURL("", url.toURI().toString());
+    }
+
+    public static void openURL(String url) throws MalformedURLException, URISyntaxException {
+
+        String protocol = "https://";
+
+        if(url.contains("://")) openURL(new URL(url));
+        else openURL(new URL(protocol + url));
     }
 
     public static void openURL(String protocol, String domain) {
