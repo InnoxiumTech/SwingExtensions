@@ -1,14 +1,6 @@
 plugins {
 
     id 'java'
-    id "com.jfrog.bintray" version '1.8.5'
-}
-
-def props = new Properties()
-File bintrayProps = new File("bintray.properties")
-if(bintrayProps.exists()) {
-
-    file("bintray.properties").withInputStream { props.load(it) }
 }
 
 apply plugin: "maven"
@@ -17,6 +9,9 @@ apply plugin: "maven-publish"
 group 'uk.co.innoxium.swing'
 version '1.0'
 
+def repsyUser = "user"
+def repsyPass = "passw"
+
 repositories {
 
     mavenCentral()
@@ -24,15 +19,16 @@ repositories {
 
 dependencies {
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
+
     classifier = 'sources'
     from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
+
     classifier = 'javadoc'
     from javadoc.destinationDir
 }
@@ -61,26 +57,16 @@ publishing {
             version '0.1'
         }
     }
-}
+    repositories {
 
-bintray {
+        maven {
 
-//    dryRun = true
-    user = props.get("username")
-    key = props.get("apiKey")
-    publications = ['SwingPublication']
-    pkg {
+            url "https://repo.repsy.io/mvn/innoxium/innoxium"
+            credentials {
 
-        repo = 'SwingExtensions'
-        name = 'swingextensions'
-        userOrg = 'innoxium'
-        vcsUrl = 'https://github.com/InnoxiumTech/SwingExtensions.git'
-        licenses = ['MIT']
-        version {
-
-            name = '0.1'
-            desc = 'This release marks a huge step forward in terms of UX and presentation.'
-            released = new Date()
+                username repsyUser
+                password repsyPass
+            }
         }
     }
 }
